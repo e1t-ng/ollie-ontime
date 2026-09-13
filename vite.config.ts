@@ -1,13 +1,17 @@
 import vinext from "vinext";
 import { defineConfig } from "vite";
-import hostingConfig from "./.openai/hosting.json";
+import { readFileSync } from "node:fs";
 import { readExecutionProfile } from "./scripts/execution-profile.mjs";
 import { sites } from "./build/sites-vite-plugin";
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   "00000000-0000-4000-8000-000000000000";
 
-const { d1, r2 } = hostingConfig;
+// Railway does not use Sites bindings and does not include a hosting manifest.
+// Read it only for Sites builds so Railway can load this config independently.
+const { d1, r2 } = process.env.ONTIME_TARGET === "railway"
+  ? { d1: null, r2: null }
+  : JSON.parse(readFileSync(new URL("./.openai/hosting.json", import.meta.url), "utf8"));
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
