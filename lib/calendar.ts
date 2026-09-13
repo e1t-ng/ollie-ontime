@@ -1,0 +1,8 @@
+export type Calendar={id:string;name:string;color:string};
+export type CalEvent={id:string;calendar:string;title:string;start:string;end:string;location:string;invitees:string;notes:string;allDay:boolean;token?:string};
+export const localDate=(d:Date)=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+export const monday=(d:Date)=>{const n=new Date(d);n.setHours(0,0,0,0);n.setDate(n.getDate()-(n.getDay()+6)%7);return n;};
+export const plusDays=(d:Date,n:number)=>{const r=new Date(d);r.setDate(r.getDate()+n);return r;};
+export const timeLabel=(s:string)=>new Date(s).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'});
+export const overlaps=(e:CalEvent,start:Date,end:Date)=>new Date(e.start)<end&&new Date(e.end)>start;
+export function demoData(week:Date){const calendars:Calendar[]=[{id:'demo-me',name:'My calendar',color:'0'},{id:'demo-maya',name:'Maya Chen',color:'1'},{id:'demo-jamie',name:'Jamie Park',color:'2'}];const specs:[number,number,number,string,number][]=[[0,9,1.5,'Weekly planning',0],[0,13,2,'Deep work',0],[1,10,1,'Coffee with Maya',1],[1,14,1.5,'Project studio',2],[2,9,2,'Focus time',0],[2,13,1,'Lunch with Jamie',2],[3,11,1.5,'Design catch-up',1],[3,15,1,'Afternoon run',0],[4,10,1.5,'Team check-in',2],[4,13,1,'Lunch together',0],[5,10,2,'Farmers market',1]];return {calendars,events:specs.map(([day,hour,length,title,c],i)=>{const s=plusDays(week,day);s.setHours(hour);return{id:'demo-'+i,calendar:calendars[c].id,title,start:s.toISOString(),end:new Date(+s+length*3600000).toISOString(),location:i===2?'Corner coffee shop':'',invitees:'',notes:'Sample event. Switch to your calendar to create your own.',allDay:false}})}}
